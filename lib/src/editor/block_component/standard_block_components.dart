@@ -61,6 +61,7 @@ final List<CharacterShortcutEvent> standardCharacterShortcutEvents = [
   insertNewLineAfterTodoList,
   insertNewLineAfterNumberedList,
   insertNewLineAfterHeading,
+  insertNewLineAfterQuote,
   insertNewLine,
 
   // bulleted list
@@ -106,7 +107,7 @@ final List<CommandShortcutEvent> standardCommandShortcutEvents = [
   redoCommand,
 
   // backspace
-  convertToParagraphCommand,
+  // convertToParagraphCommand,
   ...tableCommands,
   backspaceCommand,
   deleteLeftWordCommand,

@@ -154,6 +154,13 @@ class _MobileEditorState extends State<MobileEditor> {
         placeholderText: (node) => 'Type something...',
       ),
     );
+    map[QuoteBlockKeys.type] = QuoteBlockComponentBuilder(
+      configuration: map[QuoteBlockKeys.type]!.configuration.copyWith(
+        padding: (node) {
+          return const EdgeInsets.all(0);
+        },
+      ),
+    );
     return map;
   }
 }
