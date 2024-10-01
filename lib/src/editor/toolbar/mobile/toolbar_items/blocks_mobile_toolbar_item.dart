@@ -99,6 +99,7 @@ class _BlocksMenuState extends State<_BlocksMenu> {
               widget.selection,
               (node) => node.copyWith(
                 type: isSelected ? ParagraphBlockKeys.type : list.name,
+                indent: node.indent,
                 attributes: {
                   ParagraphBlockKeys.delta: (node.delta ?? Delta()).toJson(),
                   blockComponentBackgroundColor:

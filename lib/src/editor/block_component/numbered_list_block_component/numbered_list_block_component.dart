@@ -122,6 +122,12 @@ class _NumberedListBlockComponentWidgetState
     BuildContext context, {
     bool withBackgroundColor = true,
   }) {
+    if (widget.node.delta != null &&
+        widget.node.delta!.isEmpty &&
+        widget.node.children.isNotEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final textDirection = calculateTextDirection(
       layoutDirection: Directionality.maybeOf(context),
     );

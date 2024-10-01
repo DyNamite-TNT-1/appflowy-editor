@@ -1,4 +1,6 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:example/pages/editor/block_components/block_components.dart';
+import 'package:example/pages/editor/toolbar/toolbar_items/toolbar_items.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -55,6 +57,8 @@ class _MobileEditorState extends State<MobileEditor> {
         blocksMobileToolbarItem,
         linkMobileToolbarItem,
         dividerMobileToolbarItem,
+        indentMobileToolbarItem,
+        outdentMobileToolbarItem,
       ],
       editorState: editorState,
       child: Column(
@@ -89,6 +93,8 @@ class _MobileEditorState extends State<MobileEditor> {
                 editorScrollController: editorScrollController,
                 blockComponentBuilders: blockComponentBuilders,
                 showMagnifier: true,
+                characterShortcutEvents: myCharacterShortcutEvents,
+                commandShortcutEvents: myCommandShortcutEvents,
                 // showcase 3: customize the header and footer.
                 header: Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
@@ -152,6 +158,15 @@ class _MobileEditorState extends State<MobileEditor> {
     map[ParagraphBlockKeys.type] = ParagraphBlockComponentBuilder(
       configuration: BlockComponentConfiguration(
         placeholderText: (node) => 'Type something...',
+        indentPadding: (node, textDirection) {
+          final multiplier = node.indent > 0 ? node.indent : 1;
+          switch (textDirection) {
+            case TextDirection.ltr:
+              return EdgeInsets.only(left: 24.0 * multiplier);
+            case TextDirection.rtl:
+              return EdgeInsets.only(right: 24.0 * multiplier);
+          }
+        },
       ),
     );
     return map;
