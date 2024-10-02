@@ -19,9 +19,11 @@ Node paragraphNode({
   String? textDirection,
   Attributes? attributes,
   Iterable<Node> children = const [],
+  int? indent,
 }) {
   return Node(
     type: ParagraphBlockKeys.type,
+    indent: indent ?? 0,
     attributes: {
       ParagraphBlockKeys.delta:
           (delta ?? (Delta()..insert(text ?? ''))).toJson(),
@@ -150,6 +152,7 @@ class _ParagraphBlockComponentWidgetState
     );
 
     Widget child = Container(
+      padding: indentPadding,
       width: double.infinity,
       alignment: alignment,
       child: Column(

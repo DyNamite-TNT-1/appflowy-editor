@@ -31,6 +31,7 @@ final class Node extends ChangeNotifier with LinkedListEntry<Node> {
   Node({
     required this.type,
     String? id,
+    this.indent = 0,
     this.parent,
     Attributes attributes = const {},
     Iterable<Node> children = const [],
@@ -70,6 +71,9 @@ final class Node extends ChangeNotifier with LinkedListEntry<Node> {
 
   /// The id of the node.
   final String id;
+
+  /// The indent of the node.
+  final int indent;
 
   @Deprecated('Use type instead')
   String get subtype => type;
@@ -239,6 +243,8 @@ final class Node extends ChangeNotifier with LinkedListEntry<Node> {
   Map<String, Object> toJson() {
     final map = <String, Object>{
       'type': type,
+      'indent': indent,
+      'path': path,
     };
     if (children.isNotEmpty) {
       map['children'] = children
@@ -256,12 +262,14 @@ final class Node extends ChangeNotifier with LinkedListEntry<Node> {
 
   Node copyWith({
     String? type,
+    int? indent,
     Iterable<Node>? children,
     Attributes? attributes,
   }) {
     final node = Node(
       type: type ?? this.type,
       id: nanoid(6),
+      indent: indent ?? this.indent,
       attributes: attributes ?? {...this.attributes},
       children: children ?? [],
     );
@@ -354,6 +362,7 @@ final class TextNode extends Node {
   @override
   TextNode copyWith({
     String? type = 'text',
+    int? indent,
     Iterable<Node>? children,
     Attributes? attributes,
     Delta? delta,

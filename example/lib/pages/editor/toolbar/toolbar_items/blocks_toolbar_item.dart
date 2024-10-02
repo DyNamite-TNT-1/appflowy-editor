@@ -1,7 +1,9 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:example/pages/editor/plugins/list_plugin.dart';
+import 'package:example/pages/editor/plugins/paragraph_plugin.dart';
 import 'package:flutter/material.dart';
 
-final blocksMobileToolbarItem = MobileToolbarItem.withMenu(
+final myBlocksToolbarItem = MobileToolbarItem.withMenu(
   itemIconBuilder: (context, __, ___) => AFMobileIcon(
     afMobileIcons: AFMobileIcons.list,
     color: MobileToolbarTheme.of(context).iconColor,
@@ -95,26 +97,26 @@ class _BlocksMenuState extends State<_BlocksMenu> {
         isSelected: isSelected,
         onPressed: () {
           setState(() {
-            widget.editorState.formatNode(
-              widget.selection,
-              (node) => node.copyWith(
-                type: isSelected ? ParagraphBlockKeys.type : list.name,
-                indent: isSelected ? node.path.length - 1 : node.indent,
-                attributes: {
-                  ParagraphBlockKeys.delta: (node.delta ?? Delta()).toJson(),
-                  blockComponentBackgroundColor:
-                      node.attributes[blockComponentBackgroundColor],
-                  if (!isSelected && list.name == TodoListBlockKeys.type)
-                    TodoListBlockKeys.checked: false,
-                  if (!isSelected && list.name == HeadingBlockKeys.type)
-                    HeadingBlockKeys.level: list.level,
+            if (isSelected) {
+              widget.editorState.formatParagraph(
+                widget.selection,
+                selectionExtraInfo: {
+                  selectionExtraInfoDoNotAttachTextService: true,
                 },
-                children: [],
-              ),
-              selectionExtraInfo: {
-                selectionExtraInfoDoNotAttachTextService: true,
-              },
-            );
+              );
+            } else {
+              if (list.name == TodoListBlockKeys.type ||
+                  list.name == NumberedListBlockKeys.type ||
+                  list.name == BulletedListBlockKeys.type) {
+                widget.editorState.formatList(
+                  widget.selection,
+                  list.name,
+                  selectionExtraInfo: {
+                    selectionExtraInfoDoNotAttachTextService: true,
+                  },
+                );
+              }
+            }
           });
         },
       );
