@@ -1,5 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:example/pages/editor/block_components/base_component/indent_command.dart';
+import 'package:example/pages/editor/shortcuts/command/indent_command.dart';
 
 final indentMobileToolbarItem = MobileToolbarItem.action(
   itemIconBuilder: (context, __, ___) => AFMobileIcon(
@@ -7,6 +7,6 @@ final indentMobileToolbarItem = MobileToolbarItem.action(
     color: MobileToolbarTheme.of(context).iconColor,
   ),
   actionHandler: (_, editorState) {
-    myIndentCommand.execute(editorState);
+    $indentCommand.execute(editorState);
   },
 );

@@ -142,17 +142,12 @@ class _TodoListBlockComponentWidgetState
     BuildContext context, {
     bool withBackgroundColor = true,
   }) {
-    if (widget.node.delta != null &&
-        widget.node.delta!.isEmpty &&
-        widget.node.children.isNotEmpty) {
-      return const SizedBox.shrink();
-    }
-
     final textDirection = calculateTextDirection(
       layoutDirection: Directionality.maybeOf(context),
     );
 
     Widget child = Container(
+      padding: indentPadding,
       width: double.infinity,
       alignment: alignment,
       child: Row(

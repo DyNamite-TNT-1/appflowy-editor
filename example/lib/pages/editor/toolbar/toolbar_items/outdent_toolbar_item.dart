@@ -1,5 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:example/pages/editor/block_components/base_component/outdent_command.dart';
+import 'package:example/pages/editor/shortcuts/command/outdent_command.dart';
 
 final outdentMobileToolbarItem = MobileToolbarItem.action(
   itemIconBuilder: (context, __, ___) => AFMobileIcon(
@@ -7,6 +7,6 @@ final outdentMobileToolbarItem = MobileToolbarItem.action(
     color: MobileToolbarTheme.of(context).iconColor,
   ),
   actionHandler: (_, editorState) {
-    myOutdentCommand.execute(editorState);
+    $outdentCommand.execute(editorState);
   },
 );

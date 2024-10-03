@@ -115,6 +115,25 @@ class _BlocksMenuState extends State<_BlocksMenu> {
                     selectionExtraInfoDoNotAttachTextService: true,
                   },
                 );
+              } else {
+                widget.editorState.formatNode(
+                  widget.selection,
+                  (node) => node.copyWith(
+                    type: list.name,
+                    attributes: {
+                      ParagraphBlockKeys.delta:
+                          (node.delta ?? Delta()).toJson(),
+                      blockComponentBackgroundColor:
+                          node.attributes[blockComponentBackgroundColor],
+                      if (list.name == HeadingBlockKeys.type)
+                        HeadingBlockKeys.level: list.level,
+                    },
+                    children: [],
+                  ),
+                  selectionExtraInfo: {
+                    selectionExtraInfoDoNotAttachTextService: true,
+                  },
+                );
               }
             }
           });

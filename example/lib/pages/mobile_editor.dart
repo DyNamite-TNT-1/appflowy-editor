@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:example/pages/editor/block_components/block_components.dart';
-import 'package:example/pages/editor/toolbar/toolbar_items/blocks_toolbar_item.dart';
 import 'package:example/pages/editor/toolbar/toolbar_items/toolbar_items.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,7 +54,6 @@ class _MobileEditorState extends State<MobileEditor> {
       toolbarItems: [
         textDecorationMobileToolbarItemV2,
         buildTextAndBackgroundColorMobileToolbarItem(),
-        // blocksMobileToolbarItem,
         myBlocksToolbarItem,
         linkMobileToolbarItem,
         dividerMobileToolbarItem,
@@ -177,6 +173,45 @@ class _MobileEditorState extends State<MobileEditor> {
       configuration: map[QuoteBlockKeys.type]!.configuration.copyWith(
         padding: (node) {
           return const EdgeInsets.all(0);
+        },
+      ),
+    );
+    map[BulletedListBlockKeys.type] = BulletedListBlockComponentBuilder(
+      configuration: map[BulletedListBlockKeys.type]!.configuration.copyWith(
+        indentPadding: (node, textDirection) {
+          final multiplier = node.indent;
+          switch (textDirection) {
+            case TextDirection.ltr:
+              return EdgeInsets.only(left: 24.0 * multiplier);
+            case TextDirection.rtl:
+              return EdgeInsets.only(right: 24.0 * multiplier);
+          }
+        },
+      ),
+    );
+    map[NumberedListBlockKeys.type] = NumberedListBlockComponentBuilder(
+      configuration: map[NumberedListBlockKeys.type]!.configuration.copyWith(
+        indentPadding: (node, textDirection) {
+          final multiplier = node.indent;
+          switch (textDirection) {
+            case TextDirection.ltr:
+              return EdgeInsets.only(left: 24.0 * multiplier);
+            case TextDirection.rtl:
+              return EdgeInsets.only(right: 24.0 * multiplier);
+          }
+        },
+      ),
+    );
+    map[TodoListBlockKeys.type] = TodoListBlockComponentBuilder(
+      configuration: map[TodoListBlockKeys.type]!.configuration.copyWith(
+        indentPadding: (node, textDirection) {
+          final multiplier = node.indent;
+          switch (textDirection) {
+            case TextDirection.ltr:
+              return EdgeInsets.only(left: 24.0 * multiplier);
+            case TextDirection.rtl:
+              return EdgeInsets.only(right: 24.0 * multiplier);
+          }
         },
       ),
     );

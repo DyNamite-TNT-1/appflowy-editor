@@ -112,17 +112,12 @@ class _BulletedListBlockComponentWidgetState
     BuildContext context, {
     bool withBackgroundColor = true,
   }) {
-    if (widget.node.delta != null &&
-        widget.node.delta!.isEmpty &&
-        widget.node.children.isNotEmpty) {
-      return const SizedBox.shrink();
-    }
-
     final textDirection = calculateTextDirection(
       layoutDirection: Directionality.maybeOf(context),
     );
 
     Widget child = Container(
+      padding: indentPadding,
       width: double.infinity,
       alignment: alignment,
       child: Row(
@@ -211,15 +206,7 @@ class _BulletedListIcon extends StatelessWidget {
   ];
 
   int get level {
-    var level = 0;
-    var parent = node.parent;
-    while (parent != null) {
-      if (parent.type == 'bulleted_list') {
-        level++;
-      }
-      parent = parent.parent;
-    }
-    return level;
+    return node.indent;
   }
 
   String get icon => bulletedListIcons[level % bulletedListIcons.length];

@@ -1,13 +1,7 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 
-final listTypes = {
-  BulletedListBlockKeys.type,
-  NumberedListBlockKeys.type,
-  TodoListBlockKeys.type,
-};
-
 extension ListTransforms on EditorState {
-  /// format the node at the given selection.
+  /// format the node as given listType at the given selection.
   ///
   /// If the [Selection] is not passed in, use the current selection.
   Future<void> formatList(
@@ -15,7 +9,6 @@ extension ListTransforms on EditorState {
     String listType, {
     Map? selectionExtraInfo,
   }) async {
-    print("formatNode");
     selection ??= this.selection;
     selection = selection?.normalized;
 
@@ -24,12 +17,6 @@ extension ListTransforms on EditorState {
     }
 
     final nodes = getNodesInSelection(selection);
-
-    print("=============${nodes.length}=============");
-    for (var node in nodes) {
-      print(node.toJson());
-    }
-    print("=================================");
 
     if (nodes.isEmpty) {
       return;
@@ -44,6 +31,13 @@ extension ListTransforms on EditorState {
           node.copyWith(
             type: listType,
             children: [],
+            attributes: {
+              ParagraphBlockKeys.delta: (node.delta ?? Delta()).toJson(),
+              blockComponentBackgroundColor:
+                  node.attributes[blockComponentBackgroundColor],
+              if (listType == TodoListBlockKeys.type)
+                TodoListBlockKeys.checked: false,
+            },
           ),
         )
         ..deleteNode(node)
