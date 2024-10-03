@@ -123,6 +123,7 @@ class _BulletedListBlockComponentWidgetState
     );
 
     Widget child = Container(
+      padding: indentPadding,
       width: double.infinity,
       alignment: alignment,
       child: Row(
@@ -211,15 +212,7 @@ class _BulletedListIcon extends StatelessWidget {
   ];
 
   int get level {
-    var level = 0;
-    var parent = node.parent;
-    while (parent != null) {
-      if (parent.type == 'bulleted_list') {
-        level++;
-      }
-      parent = parent.parent;
-    }
-    return level;
+    return node.indent;
   }
 
   String get icon => bulletedListIcons[level % bulletedListIcons.length];

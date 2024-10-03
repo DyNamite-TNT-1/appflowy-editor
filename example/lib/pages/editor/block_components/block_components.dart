@@ -1,13 +1,11 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
-
-import 'base_component/indent_command.dart';
-import 'base_component/outdent_command.dart';
+import 'package:example/pages/editor/editor.dart';
 
 final List<CharacterShortcutEvent> myCharacterShortcutEvents = [
   // '\n'
-  insertNewLineAfterBulletedList,
-  insertNewLineAfterTodoList,
-  insertNewLineAfterNumberedList,
+  $insertNewLineAfterBulletedList,
+  $insertNewLineAfterTodoList,
+  $insertNewLineAfterNumberedList,
   insertNewLineAfterHeading,
   insertNewLine,
 
@@ -54,9 +52,8 @@ final List<CommandShortcutEvent> myCommandShortcutEvents = [
   redoCommand,
 
   // backspace
-  convertToParagraphCommand,
   ...tableCommands,
-  backspaceCommand,
+  $backspaceCommand,
   deleteLeftWordCommand,
   deleteLeftSentenceCommand,
 
@@ -83,8 +80,8 @@ final List<CommandShortcutEvent> myCommandShortcutEvents = [
   openLinksCommand,
 
   //
-  myIndentCommand,
-  myOutdentCommand,
+  $indentCommand,
+  $outdentCommand,
 
   //
   exitEditingCommand,

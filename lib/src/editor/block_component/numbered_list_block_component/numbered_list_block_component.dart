@@ -133,6 +133,7 @@ class _NumberedListBlockComponentWidgetState
     );
 
     Widget child = Container(
+      padding: indentPadding,
       width: double.infinity,
       alignment: alignment,
       child: Row(
@@ -272,14 +273,7 @@ class _NumberedListIconBuilder {
 
   // the level of the current node
   int get indexInRootLevel {
-    var level = 0;
-    var parent = node.parent;
-    while (parent != null) {
-      if (parent.type == NumberedListBlockKeys.type) {
-        level++;
-      }
-      parent = parent.parent;
-    }
+    var level = node.indent;
     return level;
   }
 
@@ -296,7 +290,9 @@ class _NumberedListIconBuilder {
     int? startNumber;
     while (previous != null && previous.type == NumberedListBlockKeys.type) {
       startNumber = previous.attributes[NumberedListBlockKeys.number] as int?;
-      level++;
+      if (previous.indent == node.indent) {
+        level++;
+      }
       previous = previous.previous;
     }
     if (startNumber != null) {

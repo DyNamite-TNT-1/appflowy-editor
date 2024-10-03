@@ -37,12 +37,17 @@ class BlockComponentConfiguration {
 
   BlockComponentConfiguration copyWith({
     EdgeInsets Function(Node node)? padding,
+    EdgeInsets Function(
+      Node node,
+      TextDirection textDirection,
+    )? indentPadding,
     TextStyle Function(Node node)? textStyle,
     String Function(Node node)? placeholderText,
     TextStyle Function(Node node)? placeholderTextStyle,
   }) {
     return BlockComponentConfiguration(
       padding: padding ?? this.padding,
+      indentPadding: indentPadding ?? this.indentPadding,
       textStyle: textStyle ?? this.textStyle,
       placeholderText: placeholderText ?? this.placeholderText,
       placeholderTextStyle: placeholderTextStyle ?? this.placeholderTextStyle,

@@ -62,9 +62,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    _jsonString = UniversalPlatform.isDesktopOrWeb
-        ? rootBundle.loadString('assets/example.json')
-        : rootBundle.loadString('assets/mobile_example.json');
+    // _jsonString = UniversalPlatform.isDesktopOrWeb
+    //     ? rootBundle.loadString('assets/example.json')
+    //     : rootBundle.loadString('assets/mobile_example.json');
+
+    _jsonString = Future<String>.value(
+      jsonEncode(
+        EditorState.blank(withInitialText: true).document.toJson(),
+      ).toString(),
+    );
 
     _widgetBuilder = (context) => Editor(
           jsonString: _jsonString,
@@ -100,6 +106,13 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         title: const Text('AppFlowy Editor'),
+        actions: [
+          IconButton(
+            onPressed: () =>
+                {print(jsonEncode(_editorState.document.toJson()))},
+            icon: const Icon(Icons.account_tree_outlined),
+          ),
+        ],
       ),
       body: SafeArea(
         maintainBottomViewPadding: true,

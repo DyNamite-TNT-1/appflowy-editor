@@ -152,6 +152,7 @@ class _ParagraphBlockComponentWidgetState
     );
 
     Widget child = Container(
+      padding: indentPadding,
       width: double.infinity,
       alignment: alignment,
       child: Column(
