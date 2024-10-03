@@ -215,6 +215,13 @@ class _MobileEditorState extends State<MobileEditor> {
         },
       ),
     );
+    map[QuoteBlockKeys.type] = QuoteBlockComponentBuilder(
+      configuration: map[QuoteBlockKeys.type]!.configuration.copyWith(
+        padding: (node) {
+          return const EdgeInsets.all(0);
+        },
+      ),
+    );
     return map;
   }
 }
