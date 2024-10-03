@@ -23,6 +23,8 @@ import 'package:printing/printing.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_platform/universal_platform.dart';
 
+import 'pages/editor/plugins/html/html_document.dart';
+
 enum ExportFileType {
   documentJson,
   markdown,
@@ -158,9 +160,12 @@ class _HomePageState extends State<HomePage> {
             _loadEditor(context, jsonString);
           }),
           _buildListTile(context, 'With Example.html', () async {
+            // final htmlString =
+            //     await rootBundle.loadString('assets/example.html');
+            // final html = htmlToDocument(htmlString);
             final htmlString =
-                await rootBundle.loadString('assets/example.html');
-            final html = htmlToDocument(htmlString);
+                await rootBundle.loadString('assets/my_example.html');
+            final html = $htmlToDocument(htmlString);
             final jsonString = Future<String>.value(
               jsonEncode(
                 html.toJson(),

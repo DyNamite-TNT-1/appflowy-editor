@@ -53,6 +53,7 @@ final class Node extends ChangeNotifier with LinkedListEntry<Node> {
   factory Node.fromJson(Map<String, Object> json) {
     final node = Node(
       type: json['type'] as String,
+      indent: json['indent'] as int,
       attributes: Attributes.from(json['data'] as Map? ?? {}),
       children: (json['children'] as List? ?? [])
           .map((e) => Map<String, Object>.from(e))
@@ -230,7 +231,7 @@ final class Node extends ChangeNotifier with LinkedListEntry<Node> {
 
   @override
   String toString() {
-    return 'Node(id: $id, type: $type, attributes: $attributes, children: $children)';
+    return 'Node(id: $id, type: $type, indent: $indent, attributes: $attributes, children: $children)';
   }
 
   Delta? get delta {
