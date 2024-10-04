@@ -114,6 +114,11 @@ class _HomePageState extends State<HomePage> {
                 {print(jsonEncode(_editorState.document.toJson()))},
             icon: const Icon(Icons.account_tree_outlined),
           ),
+          IconButton(
+            onPressed: () =>
+                {print($documentToHTML(_editorState.document))},
+            icon: const Icon(Icons.data_object),
+          ),
         ],
       ),
       body: SafeArea(

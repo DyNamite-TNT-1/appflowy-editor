@@ -47,7 +47,8 @@ dependencies:
   appflowy_editor_plugins: ^0.0.6
   markdown:
   universal_platform: ^1.1.0
-  html: "^0.15.0"
+  html: ^0.15.0
+  super_clipboard: ^0.8.22
 
 dependency_overrides:
   appflowy_editor:

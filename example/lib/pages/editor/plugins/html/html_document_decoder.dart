@@ -8,7 +8,7 @@ import 'package:html/parser.dart' show parse;
 final listTypes = {
   BulletedListBlockKeys.type,
   NumberedListBlockKeys.type,
-  TodoListBlockKeys.type,
+  // TodoListBlockKeys.type,
 };
 
 class MyDocumentHTMLDecoder extends Converter<String, Document> {
