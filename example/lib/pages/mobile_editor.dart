@@ -1,8 +1,110 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:example/pages/editor/block_components/block_components.dart';
 import 'package:example/pages/editor/toolbar/toolbar_items/toolbar_items.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'editor/editor.dart';
+
+final List<CharacterShortcutEvent> myCharacterShortcutEvents = [
+  // '\n'
+  $insertNewLineAfterBulletedList,
+  $insertNewLineAfterTodoList,
+  $insertNewLineAfterNumberedList,
+  insertNewLineAfterHeading,
+  insertNewLine,
+
+  // bulleted list
+  formatAsteriskToBulletedList,
+  formatMinusToBulletedList,
+
+  // numbered list
+  formatNumberToNumberedList,
+
+  // quote
+  formatDoubleQuoteToQuote,
+
+  // heading
+  formatSignToHeading,
+
+  // checkbox
+  // format unchecked box, [] or -[]
+  formatEmptyBracketsToUncheckedBox,
+  formatHyphenEmptyBracketsToUncheckedBox,
+
+  // format checked box, [x] or -[x]
+  formatFilledBracketsToCheckedBox,
+  formatHyphenFilledBracketsToCheckedBox,
+
+  // slash
+  slashCommand,
+
+  // divider
+  convertMinusesToDivider,
+  convertStarsToDivider,
+  convertUnderscoreToDivider,
+
+  // markdown syntax
+  ...markdownSyntaxShortcutEvents,
+
+  // convert => to arrow
+  formatGreaterEqual,
+];
+
+final List<CommandShortcutEvent> myCommandShortcutEvents = [
+  // undo, redo
+  undoCommand,
+  redoCommand,
+
+  // backspace
+  ...tableCommands,
+  $backspaceCommand,
+  deleteLeftWordCommand,
+  deleteLeftSentenceCommand,
+
+  //delete
+  deleteCommand,
+  deleteRightWordCommand,
+
+  // arrow keys
+  ...arrowLeftKeys,
+  ...arrowRightKeys,
+  ...arrowUpKeys,
+  ...arrowDownKeys,
+
+  //
+  homeCommand,
+  endCommand,
+
+  //
+  toggleTodoListCommand,
+  ...toggleMarkdownCommands,
+  toggleHighlightCommand,
+  showLinkMenuCommand,
+  openInlineLinkCommand,
+  openLinksCommand,
+
+  //
+  $indentCommand,
+  $outdentCommand,
+
+  //
+  exitEditingCommand,
+
+  //
+  pageUpCommand,
+  pageDownCommand,
+
+  //
+  selectAllCommand,
+
+  // delete line
+  deleteLineCommand,
+
+  // copy paste and cut
+  copyCommand,
+  ...pasteCommands,
+  cutCommand,
+];
 
 class MobileEditor extends StatefulWidget {
   const MobileEditor({
@@ -72,11 +174,11 @@ class _MobileEditorState extends State<MobileEditor> {
                 return AdaptiveTextSelectionToolbar.editable(
                   clipboardStatus: ClipboardStatus.pasteable,
                   onCopy: () {
-                    copyCommand.execute(editorState);
+                    $copyCommand.execute(editorState);
                     closeToolbar();
                   },
-                  onCut: () => cutCommand.execute(editorState),
-                  onPaste: () => pasteCommand.execute(editorState),
+                  onCut: () => $cutCommand.execute(editorState),
+                  onPaste: () => $pasteCommand.execute(editorState),
                   onSelectAll: () => selectAllCommand.execute(editorState),
                   onLiveTextInput: null,
                   onLookUp: null,
