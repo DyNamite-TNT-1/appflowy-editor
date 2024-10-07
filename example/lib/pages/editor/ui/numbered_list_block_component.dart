@@ -1,52 +1,11 @@
-import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:appflowy_editor/appflowy_editor.dart'
+    hide NumberedListBlockComponentWidget;
 import 'package:flutter/material.dart';
 import 'package:numerus/roman/roman.dart';
 import 'package:provider/provider.dart';
 
-class NumberedListBlockKeys {
-  const NumberedListBlockKeys._();
-
-  static const String type = 'numbered_list';
-
-  static const String number = 'number';
-
-  static const String delta = blockComponentDelta;
-
-  static const String backgroundColor = blockComponentBackgroundColor;
-
-  static const String textDirection = blockComponentTextDirection;
-}
-
-Node numberedListNode({
-  Delta? delta,
-  Attributes? attributes,
-  int? number,
-  String? textDirection,
-  Iterable<Node>? children,
-}) {
-  attributes ??= {
-    'delta': (delta ?? Delta()).toJson(),
-    NumberedListBlockKeys.number: number,
-  };
-  return Node(
-    type: NumberedListBlockKeys.type,
-    attributes: {
-      ...attributes,
-      if (textDirection != null)
-        NumberedListBlockKeys.textDirection: textDirection,
-    },
-    children: children ?? [],
-  );
-}
-
-typedef NumberedListIconBuilder = Widget Function(
-  BuildContext context,
-  Node node,
-  TextDirection direction,
-);
-
-class NumberedListBlockComponentBuilder extends BlockComponentBuilder {
-  NumberedListBlockComponentBuilder({
+class CustomNumberedListBlockComponentBuilder extends BlockComponentBuilder {
+  CustomNumberedListBlockComponentBuilder({
     super.configuration,
     this.iconBuilder,
   });
@@ -127,6 +86,7 @@ class _NumberedListBlockComponentWidgetState
     );
 
     Widget child = Container(
+      padding: indentPadding,
       width: double.infinity,
       alignment: alignment,
       child: Row(
@@ -266,14 +226,7 @@ class _NumberedListIconBuilder {
 
   // the level of the current node
   int get indexInRootLevel {
-    var level = 0;
-    var parent = node.parent;
-    while (parent != null) {
-      if (parent.type == NumberedListBlockKeys.type) {
-        level++;
-      }
-      parent = parent.parent;
-    }
+    var level = node.indent;
     return level;
   }
 
@@ -289,8 +242,17 @@ class _NumberedListIconBuilder {
 
     int? startNumber;
     while (previous != null && previous.type == NumberedListBlockKeys.type) {
-      startNumber = previous.attributes[NumberedListBlockKeys.number] as int?;
-      level++;
+      final indent = node.indent;
+      final prevIndent = previous.indent;
+      if (indent < prevIndent) {
+        startNumber = previous.attributes[NumberedListBlockKeys.number] as int?;
+      }
+      if (indent == prevIndent) {
+        level++;
+      }
+      if (indent > prevIndent) {
+        break;
+      }
       previous = previous.previous;
     }
     if (startNumber != null) {

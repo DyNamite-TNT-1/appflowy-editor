@@ -49,6 +49,7 @@ dependencies:
   universal_platform: ^1.1.0
   html: ^0.15.0
   super_clipboard: ^0.8.22
+  numerus: ^2.2.0
 
 dependency_overrides:
   appflowy_editor:

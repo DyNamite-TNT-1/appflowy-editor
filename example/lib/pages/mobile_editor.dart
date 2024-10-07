@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'editor/editor.dart';
+import 'editor/ui/numbered_list_block_component.dart';
 
 final List<CharacterShortcutEvent> myCharacterShortcutEvents = [
   // '\n'
@@ -291,7 +292,7 @@ class _MobileEditorState extends State<MobileEditor> {
         },
       ),
     );
-    map[NumberedListBlockKeys.type] = NumberedListBlockComponentBuilder(
+    map[NumberedListBlockKeys.type] = CustomNumberedListBlockComponentBuilder(
       configuration: map[NumberedListBlockKeys.type]!.configuration.copyWith(
         indentPadding: (node, textDirection) {
           final multiplier = node.indent;
