@@ -45,7 +45,7 @@ class MyHTMLNumberedListNodeParser extends MyHTMLNodeParser {
 
     final element = transformDomNodesWithIndent(
       HTMLTags.list,
-      [HTMLTags.unorderedList, HTMLTags.list],
+      [HTMLTags.list, HTMLTags.orderedList],
       node.indent,
       domNodes: domNodes,
     );
