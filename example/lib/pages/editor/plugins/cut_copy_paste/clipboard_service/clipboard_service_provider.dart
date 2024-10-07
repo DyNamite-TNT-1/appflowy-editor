@@ -1,5 +1,28 @@
-import 'package:example/pages/editor/plugins/cut_copy_paste/clipboard_service/clipboard_service.dart';
-import 'package:example/pages/editor/plugins/cut_copy_paste/clipboard_service/super_clipboard_service.dart';
+import 'clipboard_service.dart';
+
+class ClipboardServiceData {
+  const ClipboardServiceData({
+    this.plainText,
+    this.html,
+    this.inAppJson,
+  });
+
+  final String? plainText;
+  final String? html;
+  final String? inAppJson;
+}
+
+abstract class ClipboardService {
+  Future<bool> canProvideInAppJson();
+  Future<String?> getInAppJson();
+
+  Future<bool> canProvidePlainText();
+  Future<String?> getPlainText();
+
+  Future<bool> canProvide();
+
+  Future<void> setData(ClipboardServiceData data);
+}
 
 class ClipboardServiceProvider {
   const ClipboardServiceProvider._();

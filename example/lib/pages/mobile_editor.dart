@@ -1,5 +1,7 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:appflowy_editor_plugins/appflowy_editor_plugins.dart';
 import 'package:example/pages/editor/toolbar/toolbar_items/toolbar_items.dart';
+import 'package:example/pages/editor/ui/code_block/code_block_component.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,6 +14,7 @@ final List<CharacterShortcutEvent> myCharacterShortcutEvents = [
   $insertNewLineAfterTodoList,
   $insertNewLineAfterNumberedList,
   insertNewLineAfterHeading,
+  $enterInCodeBlock,
   insertNewLine,
 
   // bulleted list
@@ -324,6 +327,23 @@ class _MobileEditorState extends State<MobileEditor> {
           return const EdgeInsets.all(0);
         },
       ),
+    );
+    map[CodeBlockKeys.type] = CustomCodeBlockComponentBuilder(
+      configuration: BlockComponentConfiguration(
+        placeholderText: (node) => 'Type something...',
+        indentPadding: (node, textDirection) {
+          final multiplier = node.indent;
+          switch (textDirection) {
+            case TextDirection.ltr:
+              return EdgeInsets.only(left: 24.0 * multiplier);
+            case TextDirection.rtl:
+              return EdgeInsets.only(right: 24.0 * multiplier);
+          }
+        },
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      copyButtonBuilder: codeBlockCopyBuilder,
+      showLineNumbers: false,
     );
     return map;
   }

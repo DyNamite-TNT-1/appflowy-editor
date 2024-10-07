@@ -1,4 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:appflowy_editor_plugins/appflowy_editor_plugins.dart';
 import 'package:example/pages/editor/plugins/list_plugin.dart';
 import 'package:example/pages/editor/plugins/paragraph_plugin.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +72,11 @@ class _BlocksMenuState extends State<_BlocksMenu> {
       icon: AFMobileIcons.quote,
       label: AppFlowyEditorL10n.current.quote,
       name: QuoteBlockKeys.type,
+    ),
+    _ListUnit(
+      icon: AFMobileIcons.code,
+      label: "Code block",
+      name: CodeBlockKeys.type,
     ),
   ];
 

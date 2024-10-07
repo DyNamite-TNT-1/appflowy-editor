@@ -1,2 +1,2 @@
-export 'plugins/cut_copy_paste/cut_copy_paste.dart';
+export 'plugins/plugins.dart';
 export 'shortcuts/shortcuts.dart';
