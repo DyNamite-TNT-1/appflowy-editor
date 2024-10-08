@@ -5,6 +5,9 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parse;
 
+const String blockType = 'block';
+const String inlineType = 'inline';
+
 final listTypes = {
   BulletedListBlockKeys.type,
   NumberedListBlockKeys.type,
@@ -25,6 +28,11 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
       return Document.blank(withInitialText: false);
     }
     final nodes = _parseElement(body.nodes);
+    final length = nodes.length;
+    for (int i = 0; i < length; i++) {
+      print("$i ${nodes.elementAt(i).toString()}");
+    }
+
     final transformedNodes = transform(nodes);
     return Document.blank(withInitialText: false)
       ..insert(
@@ -70,38 +78,119 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
     Iterable<dom.Node> domNodes, {
     String? type,
   }) {
-    final delta = Delta();
     final List<Node> nodes = [];
-    for (final domNode in domNodes) {
-      if (domNode is dom.Element) {
-        final localName = domNode.localName;
-        if (HTMLTags.formattingElements.contains(localName)) {
-          final attributes = _parserFormattingElementAttributes(domNode);
-          delta.insert(domNode.text, attributes: attributes);
-        } else if (HTMLTags.specialElements.contains(localName)) {
-          if (delta.isNotEmpty) {
-            nodes.add(paragraphNode(delta: delta));
+    final List<Map<String, dynamic>> groupedDomNodes = _groupElement(domNodes);
+
+    for (final group in groupedDomNodes) {
+      final tag = group['tag'];
+      final elements = group['elements'];
+      if (tag is String && elements is List<dom.Node>) {
+        if (tag == blockType) {
+          for (final domNode in elements) {
+            final specialNodes = _parseSpecialElements(
+              domNode as dom.Element,
+              type: type ?? ParagraphBlockKeys.type,
+            );
+            nodes.addAll(specialNodes);
           }
-          final specialNodes = _parseSpecialElements(
-            domNode,
-            type: type ?? ParagraphBlockKeys.type,
-          );
-          nodes.addAll(specialNodes);
+        } else {
+          var delta = Delta();
+          for (final domNode in elements) {
+            if (domNode is dom.Text) {
+              delta.insert(domNode.text);
+            } else if (domNode is dom.Element) {
+              final attributes = _parserFormattingElementAttributes(domNode);
+              delta.insert(domNode.text, attributes: attributes);
+            }
+          }
+          nodes.add(paragraphNode(delta: delta));
         }
-      } else if (domNode is dom.Text) {
-        // skip the empty text node
-        if (domNode.text.trim().isEmpty) {
-          continue;
+      }
+    }
+    return nodes;
+  }
+
+  List<Map<String, dynamic>> _groupElement(
+    Iterable<dom.Node> domNodes,
+  ) {
+    List<Map<String, dynamic>> groupedElements = [];
+    List<dom.Node> currentGroup = [];
+
+    bool isAvailableForInlineElement(List<dom.Node> currentGroup) {
+      if (currentGroup.isNotEmpty &&
+          currentGroup.last is dom.Element &&
+          HTMLTags.specialElements
+              .contains((currentGroup.last as dom.Element).localName)) {
+        return false;
+      }
+      return true;
+    }
+
+    bool isAvailableForBlockElement(List<dom.Node> nodes) {
+      if (nodes.isNotEmpty &&
+          ((currentGroup.last is dom.Element &&
+                  HTMLTags.formattingElements.contains(
+                    (currentGroup.last as dom.Element).localName,
+                  )) ||
+              currentGroup.last is dom.Text)) {
+        return false;
+      }
+      return true;
+    }
+
+    for (var domNode in domNodes) {
+      if (domNode is dom.Text && domNode.text.trim().isNotEmpty) {
+        if (!isAvailableForInlineElement(currentGroup)) {
+          groupedElements.add(createGroup(currentGroup));
+          currentGroup = []; // Start a new group for inline elements
         }
-        delta.insert(domNode.text);
+        currentGroup.add(domNode);
+      } else if (domNode is dom.Element) {
+        final localName = domNode.localName;
+        if (HTMLTags.specialElements.contains(localName)) {
+          if (!isAvailableForBlockElement(currentGroup)) {
+            groupedElements.add(createGroup(currentGroup));
+            currentGroup = []; // Start a new group for block elements
+          }
+          currentGroup.add(domNode);
+        } else if (HTMLTags.formattingElements.contains(localName)) {
+          if (!isAvailableForInlineElement(currentGroup)) {
+            groupedElements.add(createGroup(currentGroup));
+            currentGroup = []; // Start a new group for inline elements
+          }
+          currentGroup.add(domNode);
+        }
       } else {
         AppFlowyEditorLog.editor.debug('Unknown node type: $domNode');
       }
     }
-    if (delta.isNotEmpty) {
-      nodes.add(paragraphNode(delta: delta));
+
+    // If there are any remaining elements in the current group, add them
+    if (currentGroup.isNotEmpty) {
+      groupedElements.add(createGroup(currentGroup));
     }
-    return nodes;
+
+    return groupedElements;
+  }
+
+  Map<String, dynamic> createGroup(List<dom.Node> elements) {
+    String tag;
+    bool isBlockGroup = elements.any(
+      (element) =>
+          element is dom.Element &&
+          HTMLTags.specialElements.contains(element.localName),
+    );
+
+    if (isBlockGroup) {
+      tag = blockType;
+    } else {
+      tag = inlineType;
+    }
+
+    return {
+      'tag': tag,
+      'elements': elements,
+    };
   }
 
   Iterable<Node> _parseSpecialElements(
