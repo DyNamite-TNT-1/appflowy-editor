@@ -14,7 +14,7 @@ final List<CharacterShortcutEvent> myCharacterShortcutEvents = [
   $insertNewLineAfterTodoList,
   $insertNewLineAfterNumberedList,
   insertNewLineAfterHeading,
-  $enterInCodeBlock,
+  enterInCodeBlockEvent,
   insertNewLine,
 
   // bulleted list
