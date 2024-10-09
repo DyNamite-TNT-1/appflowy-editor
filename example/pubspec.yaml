@@ -50,6 +50,7 @@ dependencies:
   html: ^0.15.0
   super_clipboard: ^0.8.22
   numerus: ^2.2.0
+  nanoid: ^1.0.0
 
 dependency_overrides:
   appflowy_editor:

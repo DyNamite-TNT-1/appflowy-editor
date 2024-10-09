@@ -53,7 +53,7 @@ final class Node extends ChangeNotifier with LinkedListEntry<Node> {
   factory Node.fromJson(Map<String, Object> json) {
     final node = Node(
       type: json['type'] as String,
-      indent: json['indent'] as int,
+      indent: json.containsKey('indent') ? (json['indent'] as int) : 0,
       attributes: Attributes.from(json['data'] as Map? ?? {}),
       children: (json['children'] as List? ?? [])
           .map((e) => Map<String, Object>.from(e))

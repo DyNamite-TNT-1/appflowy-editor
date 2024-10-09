@@ -23,6 +23,7 @@ import 'package:printing/printing.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_platform/universal_platform.dart';
 
+import 'pages/editor/plugins/block_data/converter.dart';
 import 'pages/editor/plugins/html/html_document.dart';
 
 enum ExportFileType {
@@ -117,6 +118,10 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () => {print($documentToHTML(_editorState.document))},
             icon: const Icon(Icons.data_object),
+          ),
+          IconButton(
+            onPressed: () => {print(convertDocumentToBlockData(_editorState.document))},
+            icon: const Icon(Icons.adb),
           ),
         ],
       ),
