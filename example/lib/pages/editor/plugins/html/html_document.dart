@@ -21,6 +21,7 @@ String $documentToHTML(
       const MyHTMLBulletedListNodeParser(),
       const MyHTMLNumberedListNodeParser(),
       const MyHTMLTodoListNodeParser(),
+      const MyHTMLCodeBlockNodeParser(),
       const HTMLQuoteNodeParser(),
       const HTMLHeadingNodeParser(),
       const HTMLImageNodeParser(),

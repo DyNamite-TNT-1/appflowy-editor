@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:appflowy_editor_plugins/appflowy_editor_plugins.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parse;
 
@@ -28,10 +29,6 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
       return Document.blank(withInitialText: false);
     }
     final nodes = _parseElement(body.nodes);
-    final length = nodes.length;
-    for (int i = 0; i < length; i++) {
-      print("$i ${nodes.elementAt(i).toString()}");
-    }
 
     final transformedNodes = transform(nodes);
     return Document.blank(withInitialText: false)
@@ -99,8 +96,12 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
             if (domNode is dom.Text) {
               delta.insert(domNode.text);
             } else if (domNode is dom.Element) {
-              final attributes = _parserFormattingElementAttributes(domNode);
-              delta.insert(domNode.text, attributes: attributes);
+              if (domNode.localName == HTMLTags.br) {
+                delta.insert('\n');
+              } else {
+                final attributes = _parserFormattingElementAttributes(domNode);
+                delta.insert(domNode.text, attributes: attributes);
+              }
             }
           }
           nodes.add(paragraphNode(delta: delta));
@@ -139,7 +140,10 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
     }
 
     for (var domNode in domNodes) {
-      if (domNode is dom.Text && domNode.text.trim().isNotEmpty) {
+      if (domNode is dom.Text) {
+        if (domNode.text.trim().isEmpty) {
+          continue;
+        }
         if (!isAvailableForInlineElement(currentGroup)) {
           groupedElements.add(createGroup(currentGroup));
           currentGroup = []; // Start a new group for inline elements
@@ -224,6 +228,8 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
         return [_parseBlockQuoteElement(element)];
       case HTMLTags.image:
         return [_parseImageElement(element)];
+      case HTMLTags.pre:
+        return [_parseCodeBlockElement(element)];
       default:
         return _parseParagraphElement(element);
     }
@@ -459,6 +465,11 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
     return [paragraphNode(delta: delta), ...specialNodes];
   }
 
+  Node _parseCodeBlockElement(dom.Element element) {
+    final (delta, nodes) = _parseDeltaElement(element);
+    return codeBlockNode(delta: delta);
+  }
+
   Node _parseImageElement(dom.Element element) {
     final src = element.attributes['src'];
     if (src == null || src.isEmpty || !src.startsWith('http')) {
@@ -493,11 +504,15 @@ class MyDocumentHTMLDecoder extends Converter<String, Document> {
               ),
             );
           } else {
-            final attributes = _parserFormattingElementAttributes(child);
-            delta.insert(
-              child.text.replaceAll(RegExp(r'\n+$'), ''),
-              attributes: attributes,
-            );
+            if (child.localName == HTMLTags.br) {
+              delta.insert('\n');
+            } else {
+              final attributes = _parserFormattingElementAttributes(child);
+              delta.insert(
+                child.text.replaceAll(RegExp(r'\n+$'), ''),
+                attributes: attributes,
+              );
+            }
           }
         }
       } else {
@@ -632,6 +647,7 @@ class HTMLTags {
   static const section = 'section';
   static const font = 'font';
   static const mark = 'mark';
+  static const pre = 'pre'; // code block
 
   static List<String> formattingElements = [
     HTMLTags.anchor,
@@ -646,6 +662,7 @@ class HTMLTags {
     HTMLTags.strikethrough,
     HTMLTags.font,
     HTMLTags.mark,
+    HTMLTags.br,
   ];
 
   static List<String> specialElements = [
@@ -665,6 +682,7 @@ class HTMLTags {
     HTMLTags.checkbox,
     HTMLTags.image,
     HTMLTags.section,
+    HTMLTags.pre,
   ];
 
   static bool isTopLevel(String tag) {

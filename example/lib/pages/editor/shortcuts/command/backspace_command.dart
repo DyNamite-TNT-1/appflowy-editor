@@ -14,7 +14,6 @@ final CommandShortcutEvent $backspaceCommand = CommandShortcutEvent(
 );
 
 CommandShortcutEventHandler _backspaceCommandHandler = (editorState) {
-  print("backspaceCommand");
   final selection = editorState.selection;
   final selectionType = editorState.selectionType;
 
@@ -158,7 +157,6 @@ CommandShortcutEventHandler _backspaceInCollapsedSelection = (editorState) {
               );
           } else {
             // do nothing
-            print("ignored here?");
             return KeyEventResult.ignored;
           }
         }

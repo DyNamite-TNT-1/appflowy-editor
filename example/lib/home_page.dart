@@ -115,8 +115,7 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.account_tree_outlined),
           ),
           IconButton(
-            onPressed: () =>
-                {print($documentToHTML(_editorState.document))},
+            onPressed: () => {print($documentToHTML(_editorState.document))},
             icon: const Icon(Icons.data_object),
           ),
         ],
@@ -165,12 +164,12 @@ class _HomePageState extends State<HomePage> {
             _loadEditor(context, jsonString);
           }),
           _buildListTile(context, 'With Example.html', () async {
-            // final htmlString =
-            //     await rootBundle.loadString('assets/example.html');
-            // final html = htmlToDocument(htmlString);
             final htmlString =
                 await rootBundle.loadString('assets/my_example.html');
             final html = $htmlToDocument(htmlString);
+            // final htmlString =
+            //     await rootBundle.loadString('assets/my_example.html');
+            // final html = $htmlToDocument(htmlString);
             final jsonString = Future<String>.value(
               jsonEncode(
                 html.toJson(),
