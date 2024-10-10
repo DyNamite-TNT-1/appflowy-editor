@@ -6,9 +6,8 @@ extension NodeExtension on Node {
   void visitAllDescendants(
     Node node,
     void Function(Node, int) visitor,
-    int depth, {
-    MetaData? metaData,
-  }) {
+    int depth,
+  ) {
     final children = node.children;
     for (var child in children) {
       visitor(child, depth + 1);

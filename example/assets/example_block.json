@@ -1,0 +1,305 @@
+{
+    "type": "rich_text",
+    "elements": [
+        {
+            "elements": [
+                {
+                    "text": "hanbiro",
+                    "type": "link",
+                    "url": "http://www.hanbiro.com"
+                },
+                {
+                    "text": "te",
+                    "type": "text"
+                },
+                {
+                    "text": "st li",
+                    "type": "text",
+                    "style": {
+                        "bold": true
+                    }
+                },
+                {
+                    "text": "nk",
+                    "type": "text"
+                },
+                {
+                    "type": "user",
+                    "user_id": "U05FKBJF79Q"
+                },
+                {
+                    "text": " ",
+                    "type": "text"
+                },
+                {
+                    "channel_id": "C078XS3KTEF",
+                    "type": "channel"
+                },
+                {
+                    "text": "\n",
+                    "type": "text"
+                }
+            ],
+            "type": "rich_text_section"
+        },
+        {
+            "elements": [
+                {
+                    "style": {
+                        "code": true
+                    },
+                    "text": "hello from the other site",
+                    "type": "text"
+                },
+                {
+                    "text": "\n",
+                    "type": "text"
+                }
+            ],
+            "type": "rich_text_section"
+        },
+        {
+            "elements": [
+                {
+                    "text": "nice to meet you\nhello you all\ngod",
+                    "type": "text"
+                }
+            ],
+            "type": "rich_text_preformatted"
+        },
+        {
+            "elements": [
+                {
+                    "text": "alo mot hai ba\nsau bay",
+                    "type": "text"
+                }
+            ],
+            "type": "rich_text_quote"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "hanbiro",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                },
+                {
+                    "elements": [
+                        {
+                            "text": "public",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 0,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "private",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                },
+                {
+                    "elements": [
+                        {
+                            "text": "huddle",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 1,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "explain",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                },
+                {
+                    "elements": [
+                        {
+                            "text": "message",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 2,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "company",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 1,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "chat",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 0,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "gpt",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                },
+                {
+                    "elements": [
+                        {
+                            "text": "google",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 2,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "linkedin",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                },
+                {
+                    "elements": [
+                        {
+                            "text": "youtube",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 1,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "gmail",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 2,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "message direct",
+                            "type": "text"
+                        },
+                        {
+                            "text": "miss you ",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 0,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "thank you",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 4,
+            "style": "ordered",
+            "type": "rich_text_list"
+        },
+        {
+            "elements": [
+                {
+                    "elements": [
+                        {
+                            "text": "brother",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "rich_text_section"
+                }
+            ],
+            "indent": 2,
+            "style": "ordered",
+            "type": "rich_text_list"
+        }
+    ]
+}

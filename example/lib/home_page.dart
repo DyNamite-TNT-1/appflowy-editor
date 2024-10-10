@@ -23,7 +23,7 @@ import 'package:printing/printing.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_platform/universal_platform.dart';
 
-import 'pages/editor/plugins/block_data/converter.dart';
+import 'pages/editor/plugins/block_data/block_document.dart';
 import 'pages/editor/plugins/html/html_document.dart';
 
 enum ExportFileType {
@@ -98,6 +98,10 @@ class _HomePageState extends State<HomePage> {
         );
   }
 
+  Map<String, dynamic> _convertToBlock() {
+    return const MyEditorBlockCodec().encode(_editorState.document);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,7 +124,9 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.data_object),
           ),
           IconButton(
-            onPressed: () => {print(convertDocumentToBlockData(_editorState.document))},
+            onPressed: () => {
+              print(jsonEncode(_convertToBlock)),
+            },
             icon: const Icon(Icons.adb),
           ),
         ],
@@ -153,6 +159,21 @@ class _HomePageState extends State<HomePage> {
                 ? rootBundle.loadString('assets/example.json')
                 : rootBundle.loadString('assets/mobile_example.json');
             _loadEditor(context, jsonString);
+          }),
+          _buildListTile(context, 'With Example Block.json', () async {
+            final blockJsonString =
+                await rootBundle.loadString('assets/example_block.json');
+            final blockJson = jsonDecode(blockJsonString);
+
+            final editorState = EditorState(
+              document: const MyEditorBlockCodec().decode(blockJson),
+            );
+            final jsonString = Future.value(
+              jsonEncode(editorState.document.toJson()),
+            );
+            if (context.mounted) {
+              _loadEditor(context, jsonString);
+            }
           }),
           _buildListTile(context, 'With Large Document (10000+ lines)', () {
             final nodes = List.generate(

@@ -1,12 +1,7 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:example/pages/editor/plugins/block_data/utils/utils.dart';
 import 'package:example/pages/editor/utils/node_util.dart';
 import 'node.dart' as block;
-
-List<String> listType = [
-  BulletedListBlockKeys.type,
-  NumberedListBlockKeys.type,
-  TodoListBlockKeys.type,
-];
 
 List<block.Node> convertDocumentToBlockData(Document document) {
   final List<block.Node> result = [];
@@ -14,13 +9,32 @@ List<block.Node> convertDocumentToBlockData(Document document) {
   root.visitAllDescendants(
     root,
     (current, _) {
-      final blockElement = convertToBlockNode(current);
+      final quoteConversionStatus = current.getBlockQuoteConversionStatus;
+      if (quoteConversionStatus == 1) {
+        final quoteData =
+            current.convertNearestBlockQuoteNodesToBlockQuoteData();
+        result.add(quoteData);
+        return;
+      } else if (quoteConversionStatus == 0) {
+        return;
+      }
+
+      final listConversionStatus = current.getListConversionStatus;
+      if (listConversionStatus == 1) {
+        final listData = current.convertNearestListNodesToBlockListData();
+        result.add(listData);
+        return;
+      } else if (listConversionStatus == 0) {
+        return;
+      }
+
+      // current is neither quote nor list
+      final blockElement = current.convertToBlockData();
       final delta = current.delta ?? Delta();
       final inlineNodes = delta
           .whereType<TextInsert>()
           .map(
-            (textInsert) =>
-                convertTextInsertToInlineNodes(textInsert, blockElement.id),
+            (textInsert) => convertTextInsertToInlineNode(textInsert),
           )
           .toList();
       final updatedBlockElement = blockElement.copyWith(children: inlineNodes);
@@ -29,125 +43,14 @@ List<block.Node> convertDocumentToBlockData(Document document) {
     -1,
   );
 
-  for (int i = 0; i < result.length; i++) {
-    final node = result[i];
-    print("$i - $node");
-  }
+  final rootBlockData = block.BlockNode(
+    type: block.NodeTypes.richText,
+    children: result,
+  );
+
+  // for (int i = 0; i < result.length; i++) {
+  //   final node = result[i];
+  //   print("$i - $node");
+  // }
   return result;
-}
-
-block.BlockNode convertToBlockNode(Node node) {
-  final parentId = node.parent?.id;
-  final nodeId = node.id;
-
-  if (node.type == NumberedListBlockKeys.type) {
-    return block.BlockNode(
-      id: nodeId,
-      type: block.NodeTypes.richTextList,
-      parent: parentId,
-      children: [],
-      metaData: {
-        "indent": node.indent,
-        "style": "ordered",
-      },
-    );
-  }
-
-  if (node.type == BulletedListBlockKeys.type) {
-    return block.BlockNode(
-      id: nodeId,
-      type: block.NodeTypes.richTextList,
-      parent: parentId,
-      children: [],
-      metaData: {
-        "indent": node.indent,
-        "style": "bullet",
-      },
-    );
-  }
-
-  if (node.type == TodoListBlockKeys.type) {
-    return block.BlockNode(
-      id: nodeId,
-      type: block.NodeTypes.richTextList,
-      parent: parentId,
-      children: [],
-      metaData: {
-        "indent": node.indent,
-        "style": "todo",
-        "value": node.attributes[TodoListBlockKeys.checked],
-      },
-    );
-  }
-
-  if (node.type == ParagraphBlockKeys.type) {
-    return block.BlockNode(
-      id: nodeId,
-      type: block.NodeTypes.richTextSection,
-      parent: parentId,
-      children: [],
-      metaData: {
-        "indent": node.indent,
-      },
-    );
-  }
-
-  return block.BlockNode(
-    id: nodeId,
-    type: block.NodeTypes.richTextSection,
-    parent: parentId,
-    children: [],
-  );
-}
-
-block.InlineNode convertTextInsertToInlineNodes(
-  TextInsert textInsert,
-  String parent,
-) {
-  final text = textInsert.text;
-  final attributes = textInsert.attributes;
-
-  if (attributes == null) {
-    return block.InlineNode(type: block.NodeTypes.text, text: text);
-  }
-
-  return block.InlineNode(
-    parent: parent,
-    type: block.NodeTypes.text,
-    text: text,
-    style: convertAttributesToCssStyle(attributes),
-  );
-}
-
-Map<String, dynamic> convertAttributesToCssStyle(
-  Map<String, dynamic> attributes,
-) {
-  final cssMap = <String, dynamic>{};
-
-  if (attributes.bold) {
-    cssMap['bold'] = true;
-  }
-  if (attributes.underline) {
-    cssMap['underline'] = true;
-  }
-
-  if (attributes.strikethrough) {
-    cssMap['strikethrough'] = true;
-  }
-
-  if (attributes.italic) {
-    cssMap['italic'] = true;
-  }
-
-  final backgroundColor = attributes.backgroundColor;
-  if (backgroundColor != null) {
-    cssMap['background-color'] = backgroundColor.toRgbaString();
-  }
-
-  final color = attributes.color;
-  if (color != null) {
-    cssMap['color'] = color.toRgbaString();
-  }
-
-  return cssMap;
 }
