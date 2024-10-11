@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'editor/editor.dart';
+import 'editor/plugins/command/command.dart';
 import 'editor/ui/numbered_list_block_component.dart';
 
 final List<CharacterShortcutEvent> myCharacterShortcutEvents = [
@@ -170,6 +171,9 @@ class _MobileEditorState extends State<MobileEditor> {
       editorState: editorState,
       child: Column(
         children: [
+          CommandPlugin(
+            editorState: editorState,
+          ),
           // build appflowy editor
           Expanded(
             child: MobileFloatingToolbar(
