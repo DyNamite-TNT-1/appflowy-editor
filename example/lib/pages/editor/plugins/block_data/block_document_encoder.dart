@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:example/pages/editor/plugins/block_data/utils/utils.dart';
-import 'package:example/pages/editor/utils/node_util.dart';
-import 'node.dart' as block;
+import 'models/node.dart' as block;
 
 const _isLog = false;
 
@@ -12,55 +11,25 @@ class DocumentBlockEncoder extends Converter<Document, Map<String, dynamic>> {
 
   @override
   Map<String, dynamic> convert(Document input) {
-    final root = input.root;
-    final blockDataChildren = collectBlockDataChildren(root);
-
-    final rootBlockData = block.BlockNode(
-      type: block.NodeTypes.richText,
-      children: blockDataChildren,
-    );
-
+    final rootBlockData = _createRootBlockData(input.root);
     return rootBlockData.toJson();
   }
 
-  List<block.Node> collectBlockDataChildren(Node root) {
+  block.BlockNode _createRootBlockData(Node root) {
+    final blockDataChildren = _collectBlockDataChildren(root);
+    return block.BlockNode(
+      type: block.NodeTypes.richText,
+      children: blockDataChildren,
+    );
+  }
+
+  List<block.Node> _collectBlockDataChildren(Node root) {
     final List<block.Node> result = [];
-    root.visitAllDescendants(
+    _visitTree(
       root,
-      (current, _) {
-        final quoteConversionStatus = current.getBlockQuoteConversionStatus;
-        if (quoteConversionStatus == 1) {
-          final quoteData =
-              current.convertNearestBlockQuoteNodesToBlockQuoteData();
-          result.add(quoteData);
-          return;
-        } else if (quoteConversionStatus == 0) {
-          return;
-        }
-
-        final listConversionStatus = current.getListConversionStatus;
-        if (listConversionStatus == 1) {
-          final listData = current.convertNearestListNodesToBlockListData();
-          result.add(listData);
-          return;
-        } else if (listConversionStatus == 0) {
-          return;
-        }
-
-        // current is neither quote nor list
-        final blockElement = current.convertToBlockData();
-        final delta = current.delta ?? Delta();
-        final inlineNodes = delta
-            .whereType<TextInsert>()
-            .map(
-              (textInsert) => convertTextInsertToInlineNode(textInsert),
-            )
-            .toList();
-        final updatedBlockElement =
-            blockElement.copyWith(children: inlineNodes);
-        result.add(updatedBlockElement);
+      (current) {
+        _processCurrentNode(current, result);
       },
-      -1,
     );
 
     if (_isLog) {
@@ -71,5 +40,51 @@ class DocumentBlockEncoder extends Converter<Document, Map<String, dynamic>> {
     }
 
     return result;
+  }
+
+  void _processCurrentNode(Node current, List<block.Node> result) {
+    final quoteStatus = current.getBlockQuoteConversionStatus;
+    if (quoteStatus == 1) {
+      result.add(current.convertNearestBlockQuoteNodesToBlockQuoteData());
+      return;
+    } else if (quoteStatus == 0) {
+      return;
+    }
+
+    final listStatus = current.getListConversionStatus;
+    if (listStatus == 1) {
+      result.add(current.convertNearestListNodesToBlockListData());
+      return;
+    } else if (listStatus == 0) {
+      return;
+    }
+
+    _addBlockElement(current, result);
+  }
+
+  void _addBlockElement(Node current, List<block.Node> result) {
+    final blockElement = current.convertToBlockData();
+    final delta = current.delta ?? Delta();
+    final inlineNodes = _convertDeltaToInlineNodes(delta);
+    final updatedBlockElement = blockElement.copyWith(children: inlineNodes);
+    result.add(updatedBlockElement);
+  }
+
+  List<block.InlineNode> _convertDeltaToInlineNodes(Delta delta) {
+    return delta
+        .whereType<TextInsert>()
+        .map(
+          (textInsert) => convertTextInsertToInlineNode(textInsert),
+        )
+        .toList();
+  }
+
+  void _visitTree(Node node, void Function(Node) visitor) {
+    for (var child in node.children) {
+      visitor(child);
+      if (child.children.isNotEmpty) {
+        _visitTree(child, visitor);
+      }
+    }
   }
 }

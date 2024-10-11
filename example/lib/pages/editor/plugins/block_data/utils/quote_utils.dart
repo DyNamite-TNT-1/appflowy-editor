@@ -1,5 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
-import '../node.dart' as block;
+import '../models/node.dart' as block;
 import 'utils.dart';
 
 extension QuoteUtils on Node {

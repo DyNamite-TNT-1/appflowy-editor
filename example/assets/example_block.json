@@ -9,19 +9,25 @@
                     "url": "http://www.hanbiro.com"
                 },
                 {
-                    "text": "te",
+                    "text": " te",
                     "type": "text"
                 },
                 {
                     "text": "st li",
                     "type": "text",
                     "style": {
-                        "bold": true
+                        "bgColor": "rgba(158, 158, 158, 77)",
+                        "bold": true,
+                        "textColor": "rgba(121, 85, 72, 255)"
                     }
                 },
                 {
-                    "text": "nk",
-                    "type": "text"
+                    "text": "nk ",
+                    "type": "text",
+                    "style": {
+                        "bgColor": "rgba(158, 158, 158, 77)",
+                        "textColor": "rgba(121, 85, 72, 255)"
+                    }
                 },
                 {
                     "type": "user",
@@ -256,17 +262,27 @@
                         {
                             "text": "message direct",
                             "type": "text"
-                        },
+                        }
+                    ],
+                    "type": "rich_text_section"
+                },
+                {
+                    "elements": [
                         {
-                            "text": "miss you ",
+                            "style": {
+                                "italic": true,
+                                "strike": true
+                            },
+                            "text": "miss you",
                             "type": "text"
                         }
                     ],
                     "type": "rich_text_section"
                 }
             ],
+            "checked": true,
             "indent": 0,
-            "style": "ordered",
+            "style": "todo",
             "type": "rich_text_list"
         },
         {
@@ -282,7 +298,7 @@
                 }
             ],
             "indent": 4,
-            "style": "ordered",
+            "style": "todo",
             "type": "rich_text_list"
         },
         {
@@ -298,7 +314,7 @@
                 }
             ],
             "indent": 2,
-            "style": "ordered",
+            "style": "todo",
             "type": "rich_text_list"
         }
     ]

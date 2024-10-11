@@ -1,6 +1,6 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:example/pages/editor/plugins/block_data/constants.dart';
-import '../node.dart' as block;
+import '../models/node.dart' as block;
 import 'utils.dart';
 
 extension ListUtils on Node {

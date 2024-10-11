@@ -2,17 +2,16 @@ import 'dart:convert';
 
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:appflowy_editor_plugins/appflowy_editor_plugins.dart';
-import 'node.dart' as block;
+import 'models/node.dart' as block;
 import 'utils/common_utils.dart';
 
 class DocumentBlockDecoder extends Converter<Map<String, dynamic>, Document> {
   @override
   Document convert(Map<String, dynamic> input) {
     final node = block.Node.fromJson(input);
-    // print("node ${node.toString()}");
 
     if (node is block.BlockNode) {
-      final List<Node> nodes = _parse(node);
+      final List<Node> nodes = _parseBlockNode(node);
       return Document.blank(withInitialText: false)
         ..insert(
           [0],
@@ -23,65 +22,101 @@ class DocumentBlockDecoder extends Converter<Map<String, dynamic>, Document> {
     return Document.blank(withInitialText: false);
   }
 
-  List<Node> _parse(
+  List<Node> _parseBlockNode(
     block.BlockNode rootNode,
   ) {
     final List<Node> result = [];
-
-    visitBlockTree(
+    _visitBlockTree(
       rootNode,
-      (current) {
-        print(current);
-
-        if (current is block.InlineNode) {
-          return;
-        }
-
-        if (current is block.BlockNode) {
-          if (current.type == block.NodeTypes.richTextList) {
-            return;
-          }
-
-          final List<TextInsert> textInserts = [];
-          for (final child in current.children) {
-            if (child is block.InlineNode) {
-              textInserts.add(convertInlineNodeToTextInsert(child));
-            }
-          }
-
-          final delta = Delta()..addAll(textInserts);
-          final parentNode = convertToNode(current, delta);
-
-          result.add(parentNode);
+      (current, parent) {
+        if (parent.type != block.NodeTypes.richTextList) {
+          _handleNode(current, result);
         }
       },
     );
     return result;
   }
 
-  void visitBlockTree(
-    block.BlockNode node,
-    void Function(block.Node) visitor,
-  ) {
-    final children = node.children;
+  void _handleNode(block.BlockNode current, List<Node> result) {
+    if (current.type == block.NodeTypes.richTextList) {
+      final listNodes = _convertRichTextList(current);
+      result.addAll(listNodes);
+    } else {
+      final node = _convertToNode(current);
+      result.add(node);
+    }
+  }
 
-    for (var child in children) {
+  Node _convertToNode(block.BlockNode blockNode) {
+    final delta = _createDeltaFromChildren(blockNode);
+
+    switch (blockNode.type) {
+      case block.NodeTypes.richTextPreformatted:
+        return codeBlockNode(delta: delta);
+      case block.NodeTypes.richTextQuote:
+        return quoteNode(delta: delta);
+      default:
+        return paragraphNode(delta: delta);
+    }
+  }
+
+  Delta _createDeltaFromChildren(block.BlockNode blockNode) {
+    final List<TextInsert> textInserts = [];
+    for (final child in blockNode.children) {
+      if (child is block.InlineNode) {
+        textInserts.add(convertInlineNodeToTextInsert(child));
+      }
+    }
+    return Delta(operations: textInserts);
+  }
+
+  List<Node> _convertRichTextList(block.BlockNode blockNode) {
+    assert(blockNode.type == block.NodeTypes.richTextList);
+
+    final List<Node> listNodes = [];
+
+    for (final child in blockNode.children) {
+      if (child is block.BlockNode &&
+          child.type == block.NodeTypes.richTextSection) {
+        final node = _createListNodeFromSection(child, blockNode);
+        listNodes.add(node);
+      }
+    }
+
+    return listNodes;
+  }
+
+  Node _createListNodeFromSection(
+    block.BlockNode child,
+    block.BlockNode parent,
+  ) {
+    final delta = _createDeltaFromChildren(child);
+    final style = parent.metaData["style"] as String? ?? "";
+    final indent = parent.metaData["indent"] as int? ?? 0;
+
+    if (style == "ordered") {
+      return numberedListNode(delta: delta).copyWith(indent: indent);
+    } else if (style == "bullet") {
+      return bulletedListNode(delta: delta).copyWith(indent: indent);
+    } else if (style == "todo") {
+      final checked = parent.metaData["checked"] as bool? ?? false;
+      return todoListNode(checked: checked, delta: delta).copyWith(
+        indent: indent,
+      );
+    }
+
+    return bulletedListNode(delta: delta).copyWith(indent: indent);
+  }
+
+  void _visitBlockTree(
+    block.BlockNode node,
+    void Function(block.BlockNode, block.BlockNode) visitor,
+  ) {
+    for (var child in node.children) {
       if (child is block.BlockNode) {
-        visitor(child);
-        visitBlockTree(child, visitor);
+        visitor(child, node);
+        _visitBlockTree(child, visitor);
       }
     }
   }
-}
-
-Node convertToNode(block.BlockNode blockNode, Delta delta) {
-  if (blockNode.type == block.NodeTypes.richTextPreformatted) {
-    return codeBlockNode(delta: delta);
-  }
-
-  if (blockNode.type == block.NodeTypes.richTextQuote) {
-    return quoteNode(delta: delta);
-  }
-
-  return paragraphNode(delta: delta);
 }

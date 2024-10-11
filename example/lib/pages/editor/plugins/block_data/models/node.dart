@@ -1,5 +1,5 @@
-typedef MetaData = Map<String, dynamic>;
-typedef Style = Map<String, dynamic>;
+import 'meta_data.dart';
+import 'style.dart';
 
 class NodeTypes {
   static const richText = 'rich_text';

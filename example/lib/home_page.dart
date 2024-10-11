@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             onPressed: () => {
-              print(jsonEncode(_convertToBlock)),
+              print(jsonEncode(_convertToBlock())),
             },
             icon: const Icon(Icons.adb),
           ),
