@@ -1,5 +1,6 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:appflowy_editor_plugins/appflowy_editor_plugins.dart';
+import 'package:example/pages/editor/plugins/mention/mention_plugin.dart';
 import 'package:example/pages/editor/toolbar/toolbar_items/toolbar_items.dart';
 import 'package:example/pages/editor/ui/code_block/code_block_component.dart';
 import 'package:flutter/material.dart';
@@ -112,6 +113,14 @@ final List<CommandShortcutEvent> myCommandShortcutEvents = [
   cutCommand,
 ];
 
+final List<UserMention> fakeMentions = [
+  UserMention(alias: "user1", fullName: "Nguyen Trong Nhan"),
+  UserMention(alias: "user2", fullName: "Nguyen Thanh Luan"),
+  UserMention(alias: "user3", fullName: "Trinh Huu Tien"),
+  UserMention(alias: "user4", fullName: "Dinh Hoang Hieu"),
+  UserMention(alias: "user5", fullName: "Le Mau Anh Duc"),
+];
+
 class MobileEditor extends StatefulWidget {
   const MobileEditor({
     super.key,
@@ -174,6 +183,10 @@ class _MobileEditorState extends State<MobileEditor> {
           CommandPlugin(
             editorState: editorState,
             commands: standardCommands,
+          ),
+          MentionPlugin(
+            editorState: editorState,
+            mentions: fakeMentions,
           ),
           // build appflowy editor
           Expanded(

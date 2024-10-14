@@ -80,15 +80,13 @@ class _CommandPluginState extends State<CommandPlugin> {
       return;
     }
 
-    // Remove all spaces from the query and convert to lower case
-    final normalizedQuery = query.replaceAll(r'/\s+/g', '').toLowerCase();
+    final normalizedQuery = query.toLowerCase();
 
     setState(() {
       _filteredCommands = commands
           .where((command) {
             return command.keywords.any((keyword) {
-              final normalizedKeyword =
-                  keyword.replaceAll(RegExp(r'\s+'), '').toLowerCase();
+              final normalizedKeyword = keyword.toLowerCase();
               return normalizedKeyword.contains(normalizedQuery);
             });
           })
