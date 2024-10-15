@@ -491,6 +491,26 @@ class Delta extends Iterable<TextOperation> {
     return _plainText!;
   }
 
+  String toPlainTextV2() {
+    final plainText = _operations.whereType<TextInsert>().map((op) {
+      final attributes = op.attributes;
+      if (attributes != null && attributes.containsKey("mention")) {
+        final mention = attributes["mention"];
+        if (mention is Map<String, dynamic>) {
+          final String? userId = mention["user_id"] as String?;
+          final String? userName = mention["user_name"] as String?;
+
+          if (userId != null) {
+            return userName ?? userId;
+          }
+        }
+      } 
+      return op.text;
+    }).join();
+
+    return plainText;
+  }
+
   @override
   Iterator<TextOperation> get iterator => _operations.iterator;
 
