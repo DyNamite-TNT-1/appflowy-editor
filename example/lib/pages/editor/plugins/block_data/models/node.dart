@@ -176,8 +176,12 @@ class InlineNode extends Node {
   Map<String, dynamic> toJson() {
     final map = super.toJson();
 
-    map['text'] = text;
-    map['style'] = style;
+    if (type != NodeTypes.user) {
+      map['text'] = text;
+      if (style.isNotEmpty) {
+        map['style'] = style;
+      }
+    }
 
     return map;
   }

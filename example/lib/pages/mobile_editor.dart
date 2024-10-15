@@ -1,5 +1,6 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:appflowy_editor_plugins/appflowy_editor_plugins.dart';
+import 'package:example/pages/editor/plugins/mention/mention_block/mention_block.dart';
 import 'package:example/pages/editor/plugins/mention/mention_plugin.dart';
 import 'package:example/pages/editor/toolbar/toolbar_items/toolbar_items.dart';
 import 'package:example/pages/editor/ui/code_block/code_block_component.dart';
@@ -257,6 +258,47 @@ class _MobileEditorState extends State<MobileEditor> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       magnifierSize: const Size(144, 96),
       mobileDragHandleBallSize: const Size(12, 12),
+      textSpanDecorator: customizeAttributeDecorator,
+    );
+  }
+
+  InlineSpan customizeAttributeDecorator(
+    BuildContext context,
+    Node node,
+    int index,
+    TextInsert text,
+    TextSpan before,
+    TextSpan after,
+  ) {
+    final attributes = text.attributes;
+    if (attributes == null) {
+      return before;
+    }
+
+    // Inline Mentions (Page Reference, Date, Reminder, etc.)
+    final mention =
+        attributes[MentionBlockKeys.mention] as Map<String, dynamic>?;
+    if (mention != null) {
+      return WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        style: after.style,
+        child: MentionBlock(
+          key: ValueKey(mention[MentionBlockKeys.userId]),
+          node: node,
+          index: index,
+          mention: mention,
+          textStyle: after.style,
+        ),
+      );
+    }
+
+    return mobileTextSpanDecoratorForAttribute(
+      context,
+      node,
+      index,
+      text,
+      before,
+      after,
     );
   }
 

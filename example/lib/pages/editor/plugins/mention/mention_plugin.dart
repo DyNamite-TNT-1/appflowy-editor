@@ -1,4 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:example/pages/editor/plugins/mention/mention_block/mention_block.dart';
 import 'package:example/pages/editor/plugins/mention/utils.dart';
 import 'package:example/pages/editor/plugins/menu/menu.dart';
 import 'package:flutter/material.dart';
@@ -51,26 +52,20 @@ class _MentionPluginState extends State<MentionPlugin> {
     void Function() closeMenu,
     MenuTextMatch match,
   ) async {
-    final text = '@${(selectedOption as MentionOption).mention.fullName}';
+    final mentionOption = (selectedOption as MentionOption);
+
     final transaction = editorState.transaction
-      ..deleteText(
+      ..replaceText(
         nodeToReplace,
         match.leadOffset,
         match.replaceableString.length,
-      )
-      ..insertText(
-        nodeToReplace,
-        match.leadOffset,
-        text,
+        '\$',
         attributes: {
-          'mention': true,
+          MentionBlockKeys.mention: {
+            MentionBlockKeys.userId: mentionOption.mention.alias,
+            MentionBlockKeys.userName: mentionOption.mention.fullName,
+          },
         },
-      )
-      ..afterSelection = Selection.collapsed(
-        Position(
-          path: nodeToReplace.path,
-          offset: match.leadOffset + text.length,
-        ),
       );
     await editorState.apply(transaction);
     closeMenu();

@@ -31,7 +31,8 @@
                 },
                 {
                     "type": "user",
-                    "user_id": "U05FKBJF79Q"
+                    "user_id": "U05FKBJF79Q",
+                    "user_name": "Le Mau Anh Duc"
                 },
                 {
                     "text": " ",
@@ -40,10 +41,6 @@
                 {
                     "channel_id": "C078XS3KTEF",
                     "type": "channel"
-                },
-                {
-                    "text": "\n",
-                    "type": "text"
                 }
             ],
             "type": "rich_text_section"
@@ -55,10 +52,6 @@
                         "code": true
                     },
                     "text": "hello from the other site",
-                    "type": "text"
-                },
-                {
-                    "text": "\n",
                     "type": "text"
                 }
             ],

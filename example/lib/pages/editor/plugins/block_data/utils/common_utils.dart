@@ -1,4 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:example/pages/editor/plugins/mention/mention_block/mention_block.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../models/models.dart' as block;
@@ -76,9 +77,31 @@ block.InlineNode convertTextInsertToInlineNode(
     return block.InlineNode(type: block.NodeTypes.text, text: text);
   }
 
+  if (attributes[MentionBlockKeys.mention] is Map<String, dynamic>) {
+    return _createUserInlineNode(attributes);
+  }
+
   return attributes.href != null
       ? _createLinkInlineNode(text, attributes)
       : _createTextInlineNode(text, attributes);
+}
+
+block.InlineNode _createUserInlineNode(Attributes attributes) {
+  final mention = attributes[MentionBlockKeys.mention];
+
+  assert(mention is Map<String, dynamic>);
+
+  final userId = mention[MentionBlockKeys.userId];
+  final userName = mention[MentionBlockKeys.userName];
+
+  return block.InlineNode(
+    type: block.NodeTypes.user,
+    style: attributes.convertToStyle(),
+    metaData: {
+      MentionBlockKeys.userId: userId,
+      MentionBlockKeys.userName: userName,
+    },
+  );
 }
 
 block.InlineNode _createLinkInlineNode(String text, Attributes attributes) {
@@ -107,9 +130,30 @@ TextInsert convertInlineNodeToTextInsert(
   final text = inlineNode.text;
   final Attributes attributes = inlineNode.style.convertToAttributes();
 
+  //If it is user mention
+  if (isUserNode(inlineNode, attributes)) {
+    return TextInsert('\$', attributes: attributes);
+  }
+
   _addLinkAttributeIfExists(inlineNode, attributes);
 
   return TextInsert(text, attributes: attributes);
+}
+
+bool isUserNode(block.InlineNode inlineNode, Attributes attributes) {
+  if (inlineNode.type == block.NodeTypes.user) {
+    final userId = inlineNode.metaData[MentionBlockKeys.userId];
+    final userName = inlineNode.metaData[MentionBlockKeys.userName];
+
+    if (userId is String && userName is String) {
+      attributes[MentionBlockKeys.mention] = {
+        MentionBlockKeys.userId: userId,
+        MentionBlockKeys.userName: userName,
+      };
+    }
+    return true; // Indicate that it's a user node
+  }
+  return false; // Not a user node
 }
 
 void _addLinkAttributeIfExists(
