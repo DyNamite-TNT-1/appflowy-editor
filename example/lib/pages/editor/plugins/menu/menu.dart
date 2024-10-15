@@ -41,7 +41,7 @@ class MenuResolution {
 }
 
 typedef TriggerFn = MenuTextMatch? Function(String);
-typedef MenuRenderFn = Widget Function(
+typedef MenuRenderFn = Widget? Function(
   ItemProps itemProps,
   String? matchingString,
 );
@@ -137,7 +137,10 @@ class _MenuPluginState extends State<MenuPlugin> {
     final currentPlainText = delta.toPlainText();
     final context = currentNode.context;
 
-    final match = widget.triggerFn(currentPlainText);
+    // only checks the text from the cursor position forward
+    final match =
+        widget.triggerFn(currentPlainText.substring(0, position.offset));
+
     widget.onQueryChange(match?.matchingString);
 
     if (match != null && context != null && context.mounted) {
@@ -193,6 +196,24 @@ class _MenuPluginState extends State<MenuPlugin> {
   ) {
     dismiss();
 
+    if (widget.options.isEmpty) {
+      return;
+    }
+
+    final child = widget.menuRenderFn(
+      ItemProps(
+        selectOptionAndCleanUp: (MenuOption option) {
+          _selectOptionAndCleanUp(option, node, resolution);
+        },
+        options: widget.options,
+      ),
+      resolution.match.matchingString,
+    );
+
+    if (child == null) {
+      return;
+    }
+
     _calculateMenuOffset(resolution.rect);
     final (left, top, right, bottom) = getPosition();
 
@@ -233,15 +254,7 @@ class _MenuPluginState extends State<MenuPlugin> {
                       minWidth: 200,
                       maxWidth: 200,
                     ),
-                    child: widget.menuRenderFn(
-                      ItemProps(
-                        selectOptionAndCleanUp: (MenuOption option) {
-                          _selectOptionAndCleanUp(option, node, resolution);
-                        },
-                        options: widget.options,
-                      ),
-                      resolution.match.matchingString,
-                    ),
+                    child: child,
                   ),
                 ),
               ),

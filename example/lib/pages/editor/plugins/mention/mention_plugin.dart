@@ -66,7 +66,9 @@ class _MentionPluginState extends State<MentionPlugin> {
             MentionBlockKeys.userName: mentionOption.mention.fullName,
           },
         },
-      );
+      )
+      //add a space
+      ..insertText(nodeToReplace, match.leadOffset + 1, " ");
     await editorState.apply(transaction);
     closeMenu();
   }
@@ -102,7 +104,7 @@ class _MentionPluginState extends State<MentionPlugin> {
       triggerFn: _findMentionMatch,
       menuRenderFn: (ItemProps itemProps, String? matchingString) {
         if (_filteredMentionOptions.isEmpty) {
-          return _buildNoResultsWidget(context);
+          return null;
         }
 
         return ListView.builder(
