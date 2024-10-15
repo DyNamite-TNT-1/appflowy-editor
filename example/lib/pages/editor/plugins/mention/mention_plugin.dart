@@ -124,20 +124,4 @@ class _MentionPluginState extends State<MentionPlugin> {
       },
     );
   }
-
-  Widget _buildNoResultsWidget(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: SizedBox(
-        width: 140,
-        child: Material(
-          child: Text(
-            "No results",
-            style: TextStyle(fontSize: 18.0, color: Colors.grey),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
 }
