@@ -1,5 +1,6 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:appflowy_editor/src/editor/block_component/base_component/widget/ignore_parent_gesture.dart';
+import 'package:appflowy_editor/src/editor/editor_component/measure_size.dart';
 import 'package:appflowy_editor/src/flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,13 @@ Node pageNode({
 }
 
 class PageBlockComponentBuilder extends BlockComponentBuilder {
+  PageBlockComponentBuilder({
+    super.configuration,
+    this.onSizeChange,
+  });
+
+  final OnWidgetSizeChange? onSizeChange;
+
   @override
   BlockComponentWidget build(BlockComponentContext blockComponentContext) {
     return PageBlockComponent(
@@ -27,6 +35,7 @@ class PageBlockComponentBuilder extends BlockComponentBuilder {
       node: blockComponentContext.node,
       header: blockComponentContext.header,
       footer: blockComponentContext.footer,
+      onSizeChange: onSizeChange,
     );
   }
 }
@@ -40,10 +49,12 @@ class PageBlockComponent extends BlockComponentStatelessWidget {
     super.configuration = const BlockComponentConfiguration(),
     this.header,
     this.footer,
+    this.onSizeChange,
   });
 
   final Widget? header;
   final Widget? footer;
+  final OnWidgetSizeChange? onSizeChange;
 
   @override
   Widget build(BuildContext context) {
@@ -59,21 +70,26 @@ class PageBlockComponent extends BlockComponentStatelessWidget {
             if (scroller != null) {
               editorState.updateAutoScroller(scroller);
             }
-            return Column(
-              children: [
-                if (header != null) header!,
-                ...items.map(
-                  (e) => Container(
-                    constraints: BoxConstraints(
-                      maxWidth:
-                          editorState.editorStyle.maxWidth ?? double.infinity,
+            return MeasureSize(
+              onSizeChange: (size) {
+                onSizeChange?.call(size);
+              },
+              child: Column(
+                children: [
+                  if (header != null) header!,
+                  ...items.map(
+                    (e) => Container(
+                      constraints: BoxConstraints(
+                        maxWidth:
+                            editorState.editorStyle.maxWidth ?? double.infinity,
+                      ),
+                      padding: editorState.editorStyle.padding,
+                      child: editorState.renderer.build(context, e),
                     ),
-                    padding: editorState.editorStyle.padding,
-                    child: editorState.renderer.build(context, e),
                   ),
-                ),
-                if (footer != null) footer!,
-              ],
+                  if (footer != null) footer!,
+                ],
+              ),
             );
           },
         ),

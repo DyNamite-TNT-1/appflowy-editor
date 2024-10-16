@@ -11,6 +11,8 @@ import 'editor/editor.dart';
 import 'editor/plugins/command/command_plugin.dart';
 import 'editor/ui/numbered_list_block_component.dart';
 
+typedef OnWidgetSizeChange = void Function(Size size);
+
 final List<CharacterShortcutEvent> myCharacterShortcutEvents = [
   // '\n'
   $insertNewLineAfterBulletedList,
@@ -115,6 +117,7 @@ final List<CommandShortcutEvent> myCommandShortcutEvents = [
 ];
 
 final List<UserMention> fakeMentions = [
+  UserMention(alias: "user6", fullName: "Duc"),
   UserMention(alias: "user1", fullName: "Nguyen Trong Nhan"),
   UserMention(alias: "user2", fullName: "Nguyen Thanh Luan"),
   UserMention(alias: "user3", fullName: "Trinh Huu Tien"),
@@ -127,10 +130,12 @@ class MobileEditor extends StatefulWidget {
     super.key,
     required this.editorState,
     this.editorStyle,
+    this.onSizeChanged,
   });
 
   final EditorState editorState;
   final EditorStyle? editorStyle;
+  final OnWidgetSizeChange? onSizeChanged;
 
   @override
   State<MobileEditor> createState() => _MobileEditorState();
@@ -150,11 +155,12 @@ class _MobileEditorState extends State<MobileEditor> {
 
     editorScrollController = EditorScrollController(
       editorState: editorState,
-      shrinkWrap: false,
+      shrinkWrap: true,
     );
 
     editorStyle = _buildMobileEditorStyle();
-    blockComponentBuilders = _buildBlockComponentBuilders();
+    blockComponentBuilders =
+        _buildBlockComponentBuilders(onSizeChange: widget.onSizeChanged);
   }
 
   @override
@@ -162,7 +168,8 @@ class _MobileEditorState extends State<MobileEditor> {
     super.reassemble();
 
     editorStyle = _buildMobileEditorStyle();
-    blockComponentBuilders = _buildBlockComponentBuilders();
+    blockComponentBuilders =
+        _buildBlockComponentBuilders(onSizeChange: widget.onSizeChanged);
   }
 
   @override
@@ -221,16 +228,17 @@ class _MobileEditorState extends State<MobileEditor> {
                 showMagnifier: true,
                 characterShortcutEvents: myCharacterShortcutEvents,
                 commandShortcutEvents: myCommandShortcutEvents,
+                autoScrollEdgeOffset: 40,
                 // showcase 3: customize the header and footer.
-                header: Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: Image.asset(
-                    'assets/images/header.png',
-                  ),
-                ),
-                footer: const SizedBox(
-                  height: 100,
-                ),
+                // header: Padding(
+                //   padding: const EdgeInsets.only(bottom: 10.0),
+                //   child: Image.asset(
+                //     'assets/images/header.png',
+                //   ),
+                // ),
+                // footer: const SizedBox(
+                //   height: 100,
+                // ),
               ),
             ),
           ),
@@ -279,15 +287,19 @@ class _MobileEditorState extends State<MobileEditor> {
     final mention =
         attributes[MentionBlockKeys.mention] as Map<String, dynamic>?;
     if (mention != null) {
+      final newStyle = before.style?.copyWith(
+        fontSize: 24,
+      );
+
       return WidgetSpan(
         alignment: PlaceholderAlignment.middle,
-        style: after.style,
+        style: newStyle,
         child: MentionBlock(
           key: ValueKey(mention[MentionBlockKeys.userId]),
           node: node,
           index: index,
           mention: mention,
-          textStyle: after.style,
+          textStyle: newStyle,
         ),
       );
     }
@@ -303,7 +315,9 @@ class _MobileEditorState extends State<MobileEditor> {
   }
 
   // showcase 2: customize the block style
-  Map<String, BlockComponentBuilder> _buildBlockComponentBuilders() {
+  Map<String, BlockComponentBuilder> _buildBlockComponentBuilders({
+    OnWidgetSizeChange? onSizeChange,
+  }) {
     final map = {
       ...standardBlockComponentBuilderMap,
     };
@@ -316,6 +330,8 @@ class _MobileEditorState extends State<MobileEditor> {
       16.0,
       14.0,
     ];
+    map[PageBlockKeys.type] =
+        PageBlockComponentBuilder(onSizeChange: onSizeChange);
     map[HeadingBlockKeys.type] = HeadingBlockComponentBuilder(
       textStyleBuilder: (level) => GoogleFonts.poppins(
         fontSize: levelToFontSize.elementAtOrNull(level - 1) ?? 14.0,

@@ -25,6 +25,7 @@ import 'package:universal_platform/universal_platform.dart';
 
 import 'pages/editor/plugins/block_data/block_document.dart';
 import 'pages/editor/plugins/html/html_document.dart';
+import 'pages/small_layout_editor.dart';
 
 enum ExportFileType {
   documentJson,
@@ -216,6 +217,14 @@ class _HomePageState extends State<HomePage> {
 
           // Theme Demo
           _buildSeparator(context, 'Showcases'),
+          _buildListTile(context, 'Small layout', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SmallLayoutEditor(),
+              ),
+            );
+          }),
           _buildListTile(context, 'Drag to reorder', () {
             Navigator.push(
               context,
