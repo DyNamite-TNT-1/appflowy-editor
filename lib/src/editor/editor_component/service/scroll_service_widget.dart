@@ -102,10 +102,58 @@ class _ScrollServiceWidgetState extends State<ScrollServiceWidget>
       if (PlatformExtension.isMobile) {
         // soft keyboard
         // workaround: wait for the soft keyboard to show up
-        final duration = KeyboardHeightObserver.currentKeyboardHeight == 0
+
+        // OLD CODE:
+        // This code attempts to determine whether to wait for the keyboard
+        // to show up based solely on the previous keyboard height.
+        // It does not account for potential changes in keyboard height
+        // after the selection update.
+        // final duration = KeyboardHeightObserver.currentKeyboardHeight == 0
+        //     ? const Duration(milliseconds: 250)
+        //     : Duration.zero;
+        // return Future.delayed(duration, () {
+        //   startAutoScroll(
+        //     endTouchPoint,
+        //     edgeOffset: editorState.autoScrollEdgeOffset,
+        //     duration: Duration.zero,
+        //   });
+        // });
+
+        // NEW CODE:
+        // The new approach first checks if the keyboard is currently shown
+        // by comparing the current keyboard height. This allows for a more
+        // accurate delay calculation and ensures that the scroll position
+        // is adjusted based on the actual keyboard height at the time of
+        // selection change.
+        final isShowingKeyboard =
+            KeyboardHeightObserver.currentKeyboardHeight != 0;
+        final duration = !isShowingKeyboard
             ? const Duration(milliseconds: 250)
             : Duration.zero;
+
+        // Delay the execution based on whether the keyboard is shown or not.
+        // To wait keyboard showing up.
         return Future.delayed(duration, () {
+          // If isShowingKeyboard is false, the keyboard was not previously visible.
+          // However, it is now displayed, so we need to adjust the end touch point
+          // to account for the current keyboard height. This ensures that the selection
+          // remains visible and is not obscured by the keyboard.
+          if (!isShowingKeyboard) {
+            final nextKeyboardHeight =
+                KeyboardHeightObserver.currentKeyboardHeight;
+
+            final newEndTouchPoint =
+                Offset(endTouchPoint.dx, endTouchPoint.dy - nextKeyboardHeight);
+
+            return startAutoScroll(
+              newEndTouchPoint,
+              edgeOffset: editorState.autoScrollEdgeOffset,
+              duration: Duration.zero,
+            );
+          }
+
+          // If the keyboard is showing, use the original end touch point
+          // for auto-scrolling to keep the selection visible.
           startAutoScroll(
             endTouchPoint,
             edgeOffset: editorState.autoScrollEdgeOffset,
