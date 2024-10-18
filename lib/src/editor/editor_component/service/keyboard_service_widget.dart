@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:appflowy_editor/src/editor/editor_component/service/ime/delta_input_on_floating_cursor_update.dart';
 import 'package:flutter/foundation.dart';
@@ -245,7 +247,7 @@ class KeyboardServiceWidgetState extends State<KeyboardServiceWidget>
         .where((element) => element.delta != null);
 
     // Get the composing text range.
-    final composingTextRange =
+    var composingTextRange =
         textInputService.composingTextRange ?? TextRange.empty;
     if (editableNodes.isNotEmpty) {
       // Get the text by concatenating all the editable nodes in the selection.
@@ -256,6 +258,14 @@ class KeyboardServiceWidgetState extends State<KeyboardServiceWidget>
 
       // Remove the last '\n'.
       text = text.substring(0, text.length - 1);
+
+      if (composingTextRange.end > text.length ||
+          composingTextRange.start > text.length) {
+        composingTextRange = TextRange(
+          start: min(text.length, composingTextRange.start),
+          end: min(text.length, composingTextRange.end),
+        );
+      }
 
       return TextEditingValue(
         text: text,

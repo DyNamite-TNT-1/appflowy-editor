@@ -287,15 +287,17 @@ class _MobileEditorState extends State<MobileEditor> {
     final mention =
         attributes[MentionBlockKeys.mention] as Map<String, dynamic>?;
     if (mention != null) {
-      final newStyle = before.style?.copyWith(
-        fontSize: 24,
+      final newStyle = after.style?.merge(
+        const TextStyle(fontSize: 24),
       );
+
+      final mentionBlockKey = GlobalKey(debugLabel: 'mention_block_key');
 
       return WidgetSpan(
         alignment: PlaceholderAlignment.middle,
-        style: newStyle,
+        // style: newStyle,
         child: MentionBlock(
-          key: ValueKey(mention[MentionBlockKeys.userId]),
+          key: mentionBlockKey,
           node: node,
           index: index,
           mention: mention,

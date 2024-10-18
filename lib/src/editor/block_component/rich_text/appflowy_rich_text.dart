@@ -183,8 +183,21 @@ class _AppFlowyRichTextState extends State<AppFlowyRichText>
       return null;
     }
 
+    // final inlineSpans = collectInlineSpans();
+    // for (final inlineSpan in inlineSpans) {
+    //   // print(inlineSpan);
+    // }
+
     final textPosition = TextPosition(offset: position.offset);
-    var cursorHeight = _renderParagraph?.getFullHeightForCaret(textPosition);
+    final prevTextPosition = TextPosition(offset: max(0, position.offset - 1));
+    final widgetSpanCursorRect = _getCursorRectForTextPosition(textPosition);
+    final prevWidgetSpanCursorRect =
+        _getCursorRectForTextPosition(prevTextPosition);
+
+    var cursorHeight = prevWidgetSpanCursorRect != null
+        ? prevWidgetSpanCursorRect.height
+        : _renderParagraph?.getFullHeightForCaret(textPosition);
+
     var cursorOffset =
         _renderParagraph?.getOffsetForCaret(textPosition, Rect.zero) ??
             Offset.zero;
@@ -212,13 +225,95 @@ class _AppFlowyRichTextState extends State<AppFlowyRichText>
       );
       cursorHeight = widget.cursorHeight;
     }
+
+    var prevCursorOffset = _renderParagraph?.getOffsetForCaret(
+          prevTextPosition,
+          Rect.zero,
+        ) ??
+        Offset.zero;
+
+    var nextCursorOffset = _renderParagraph?.getOffsetForCaret(
+          TextPosition(offset: textPosition.offset + 1),
+          Rect.zero,
+        ) ??
+        Offset.zero;
+
+    print("widgetSpanCursorRect $widgetSpanCursorRect");
+    print("prevWidgetSpanCursorRect $prevWidgetSpanCursorRect");
+    print("cursorOffset $cursorOffset");
+    print("prevCursorOffset $prevCursorOffset");
+    print("nextCursorOffset $nextCursorOffset");
+
+    double top = 0;
+    double left = 0;
+    if (widgetSpanCursorRect != null) {
+      top = prevCursorOffset.dy;
+      if (widgetSpanCursorRect.top != 0 && widgetSpanCursorRect.left == 0) {
+        top = cursorOffset.dy + prevCursorOffset.dy;
+      }
+    } else if (prevWidgetSpanCursorRect != null) {
+      top = prevCursorOffset.dy;
+
+      if (prevWidgetSpanCursorRect.top != 0 &&
+          prevWidgetSpanCursorRect.left == 0) {
+      }
+    } else {
+      top = cursorOffset.dy;
+    }
+
     final rect = Rect.fromLTWH(
       max(0, cursorOffset.dx - (widget.cursorWidth / 2.0)),
-      cursorOffset.dy,
+      top,
       widget.cursorWidth,
       cursorHeight ?? 16.0,
     );
+    print("rect $rect");
     return rect;
+  }
+
+  Rect? _getCursorRectForTextPosition(TextPosition textPosition) {
+    // Check if the paragraph has been rendered.
+    if (_renderParagraph == null) {
+      return null; // Return null if not rendered.
+    }
+
+    // Get the list of child spans (TextSpan and WidgetSpan).
+    final textSpans = (_renderParagraph!.text as TextSpan).children ?? [];
+    if (textSpans.isEmpty) {
+      return null; // Return null if there are no spans.
+    }
+
+    // Adjust cursor position for calculation (prevent negative index).
+    final cursorPosition = textPosition.offset;
+
+    int start = 0; // Track the current position in the spans.
+    for (final inlineSpan in textSpans) {
+      // Check if the inline span is a TextSpan.
+      if (inlineSpan is TextSpan) {
+        final spanLength = inlineSpan.text?.length ?? 0;
+        // Check if the cursor is within the current TextSpan.
+        if (cursorPosition >= start && cursorPosition < start + spanLength) {
+          return null; // No need to do with TextSpan
+        }
+        start += spanLength; // Move the start index forward.
+      } else if (inlineSpan is WidgetSpan) {
+        const spanLength = 1; // WidgetSpan counts as one character.
+        // Check if the cursor is within the current WidgetSpan.
+        if (cursorPosition >= start && cursorPosition < start + spanLength) {
+          // Attempt to get the cursor rect from the widget.
+          final rect = ((inlineSpan.child.key as GlobalKey).currentState
+                  as SelectableMixin)
+              .getCursorRectInPosition(Position(path: widget.node.path));
+          if (rect != null) {
+            return rect; // Return the rect.
+          }
+          return null;
+        }
+        start += spanLength; // Move the start index forward.
+      }
+    }
+
+    return null;
   }
 
   @override
